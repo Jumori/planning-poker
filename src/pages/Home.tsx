@@ -10,11 +10,11 @@ import { Button } from '../components/Button'
 import homeImg from '../assets/undraw_scrum_board_re_wk7v.svg'
 
 type FormData = {
-  roomCode: string
+  gameCode: string
 }
 
 const schema = Yup.object().shape({
-  roomCode: Yup.string().required('Código obrigatório')
+  gameCode: Yup.string().required('Código obrigatório')
 })
 
 export const Home = () => {
@@ -28,15 +28,22 @@ export const Home = () => {
     resolver: yupResolver(schema)
   })
 
-  const handleCreateRoom = () => {
-    console.log('handleCreateRoom')
+  const handleCreateGame = () => {
+    try {
+      console.log('handleCreateGame')
+      toast.success('Login...')
+      navigate(`/dashboard`)
+    } catch (error) {
+      console.log(error)
+      toast.error('Credenciais inválidas')
+    }
   }
 
-  const handleJoinRoom = (data: FormData) => {
+  const handleJoinGame = (data: FormData) => {
     try {
       console.log('handleJoinRoom', data)
       toast.success('Entrando na sala...')
-      navigate(`/rooms/${data.roomCode}`)
+      navigate(`/games/${data.gameCode}`)
     } catch (error) {
       console.log(error)
       toast.error('Não foi possível acessar sala')
@@ -70,7 +77,7 @@ export const Home = () => {
           <Button
             color="bg-red-500"
             textColor="text-white"
-            onClick={handleCreateRoom}
+            onClick={handleCreateGame}
           >
             <GoogleLogo color="white" weight="bold" className="flex w-6 h-6" />
             Crie sua sala com o Google
@@ -100,7 +107,7 @@ export const Home = () => {
           </div>
 
           <form
-            onSubmit={handleSubmit(data => handleJoinRoom(data as FormData))}
+            onSubmit={handleSubmit(data => handleJoinGame(data as FormData))}
             className="flex flex-col"
           >
             <div className="flex flex-col mb-4">
@@ -119,13 +126,13 @@ export const Home = () => {
                 focus:ring-violet-500
                 focus:ring-1
                 focus:outline-none
-                ${errors.roomCode && 'border-red-500 text-red-500'}
+                ${errors.gameCode && 'border-red-500 text-red-500'}
               `}
                 {...register('roomCode')}
               />
-              {errors.roomCode && (
+              {errors.gameCode && (
                 <span className="text-sm text-red-600">
-                  {errors.roomCode.message}
+                  {errors.gameCode.message}
                 </span>
               )}
             </div>

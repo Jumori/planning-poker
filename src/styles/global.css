@@ -9,7 +9,5 @@
 }
 
 body {
-  background: #f8f8f8;
-  color: #29292e;
-  font-size: 'Poppins', sans-serif;
+  @apply bg-zinc-100 text-zinc-800 font-poppins;
 }
