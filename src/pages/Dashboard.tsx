@@ -1,12 +1,19 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { PlusCircle } from 'phosphor-react'
 import { format, subDays } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-import { Header } from '../components/Header'
+import { Header } from '../components/Header/Index'
 import { GameCards } from '../components/GameCards'
 
 export const Dashboard = () => {
+  const navigate = useNavigate()
+
+  const handleNewRoom = () => {
+    navigate(`/admin/rooms/df8f4ed7-d2a1-43b1-bd5e-00b0d40296fd`)
+  }
+
   return (
     <>
       <Header username="John Doe" />
@@ -44,6 +51,7 @@ export const Dashboard = () => {
               transition-all
               duration-150
               ease-linear"
+              onClick={handleNewRoom}
             >
               <PlusCircle
                 size="50"
