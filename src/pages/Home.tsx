@@ -77,6 +77,7 @@ export const Home = () => {
           <Button
             color="bg-red-500"
             textColor="text-white"
+            type="button"
             onClick={handleCreateGame}
           >
             <GoogleLogo color="white" weight="bold" className="flex w-6 h-6" />
@@ -128,7 +129,7 @@ export const Home = () => {
                 focus:outline-none
                 ${errors.gameCode && 'border-red-500 text-red-500'}
               `}
-                {...register('roomCode')}
+                {...register('gameCode')}
               />
               {errors.gameCode && (
                 <span className="text-sm text-red-600">
