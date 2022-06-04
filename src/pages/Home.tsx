@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
-import { Button } from '../components/Button'
+import { Button } from '../components/Common/Button'
 import homeImg from '../assets/undraw_scrum_board_re_wk7v.svg'
 
 type FormData = {
