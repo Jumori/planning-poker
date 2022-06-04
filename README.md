@@ -1,14 +1,14 @@
 <h1 align="center">
-  Planning Poker
+  PlanPoker
 </h1>
 
 <p align="center">
-  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/Jumori/planning-poker?color=%2304D361">
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/Jumori/planpoker?color=%2304D361">
 
-  <img alt="Repository size" src="https://img.shields.io/github/repo-size/Jumori/planning-poker">
+  <img alt="Repository size" src="https://img.shields.io/github/repo-size/Jumori/planpoker">
 
-  <a href="https://github.com/Jumori/planning-poker/commits/master">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Jumori/planning-poker">
+  <a href="https://github.com/Jumori/planpoker/commits/master">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Jumori/planpoker">
   </a>
 </p>
 
@@ -33,7 +33,7 @@ Planeje as sprints junto ao seu time de forma produtiva com a ferramenta de plan
 
 O layout da aplicação está disponível no Figma:
 
-<a href="https://www.figma.com/file/lvHI2foah9ZKcHNCyT6Sut/Planning-Poker?node-id=0%3A1">
+<a href="https://www.figma.com/file/lvHI2foah9ZKcHNCyT6Sut/planpoker?node-id=0%3A1">
   <img alt="Figma" src="https://img.shields.io/badge/Acessar%20Layout%20-Figma-%2304D361">
 </a>
 
@@ -49,10 +49,10 @@ Antes de começar, você vai precisar ter instalado em sua máquina as seguintes
 ```bash
 
 # Clone este repositório
-$ git clone git@github.com:Jumori/planning-poker.git
+$ git clone git@github.com:Jumori/planpoker.git
 
 # Acesse a pasta do projeto no seu terminal/cmd
-$ cd planning-poker
+$ cd planpoker
 
 # Instale as dependências
 $ yarn install
@@ -71,7 +71,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
 -   **[Vite](https://vitejs.dev/)**
 -   **[Tailwind](https://tailwindcss.com/)**
 
-> Veja o arquivo  [package.json](https://github.com/Jumori/planning-poker/blob/master/package.json)
+> Veja o arquivo  [package.json](https://github.com/Jumori/planpoker/blob/master/package.json)
 
 
 ## 🦸 Autora
