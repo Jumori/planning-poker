@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
+import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/Common/Button'
 import homeImg from '../assets/undraw_scrum_board_re_wk7v.svg'
 
@@ -19,6 +20,7 @@ const schema = Yup.object().shape({
 
 export const Home = () => {
   const navigate = useNavigate()
+  const { user, signInWithGoogle } = useAuth()
 
   const {
     register,
@@ -28,14 +30,12 @@ export const Home = () => {
     resolver: yupResolver(schema)
   })
 
-  const handleCreateGame = () => {
-    try {
-      console.log('handleCreateGame')
-      toast.success('Login...')
+  const handleCreateGame = async () => {
+    if (user) {
       navigate(`/dashboard`)
-    } catch (error) {
-      console.log(error)
-      toast.error('Credenciais inválidas')
+    } else {
+      const userStatus = await signInWithGoogle()
+      if (userStatus) navigate(`/dashboard`)
     }
   }
 

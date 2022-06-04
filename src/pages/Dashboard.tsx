@@ -1,42 +1,54 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PlusCircle } from 'phosphor-react'
 import { format, subDays } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import toast from 'react-hot-toast'
 
+import { useAuth } from '../hooks/useAuth'
 import { Header } from '../components/Header/Index'
 import { GameCards } from '../components/Dashboard/GameCards'
 
 export const Dashboard = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const handleNewRoom = () => {
     navigate(`/admin/rooms/df8f4ed7-d2a1-43b1-bd5e-00b0d40296fd`)
   }
 
+  useEffect(() => {
+    if (!user) {
+      toast.error('Sessão expirada')
+      navigate('/')
+    }
+  }, [])
+
   return (
     <>
-      <Header username="John Doe" />
+      {user && (
+        <>
+          <Header username={user.name} avatar={user.avatar} />
 
-      <main className="py-4 px-10">
-        <section>
-          <div className="flex flex-col justify-center items-center gap-4">
-            <div className="flex justify-center items-center gap-2">
-              <h1 className="text-3xl">Meus jogos</h1>
-              <span className="bg-zinc-300 rounded-xl py-1 px-2 text-sm">
-                2 jogos
-              </span>
-            </div>
+          <main className="py-4 px-10">
+            <section>
+              <div className="flex flex-col justify-center items-center gap-4">
+                <div className="flex justify-center items-center gap-2">
+                  <h1 className="text-3xl">Meus jogos</h1>
+                  <span className="bg-zinc-300 rounded-xl py-1 px-2 text-sm">
+                    2 jogos
+                  </span>
+                </div>
 
-            <p className="">
-              Crie até 5 planning poker simultâneos e compartilhe a URL com seu
-              time
-            </p>
-          </div>
+                <p className="">
+                  Crie até 5 planning poker simultâneos e compartilhe a URL com
+                  seu time
+                </p>
+              </div>
 
-          <div className="flex gap-6 py-10">
-            <button
-              className="
+              <div className="flex gap-6 py-10">
+                <button
+                  className="
               bg-transparent
               border-2
               border-violet-500
@@ -51,80 +63,82 @@ export const Dashboard = () => {
               transition-all
               duration-150
               ease-linear"
-              onClick={handleNewRoom}
-            >
-              <PlusCircle
-                size="50"
-                weight="light"
-                className="text-violet-500"
-              />
-              <p className="text-violet-500">Novo jogo</p>
-            </button>
+                  onClick={handleNewRoom}
+                >
+                  <PlusCircle
+                    size="50"
+                    weight="light"
+                    className="text-violet-500"
+                  />
+                  <p className="text-violet-500">Novo jogo</p>
+                </button>
 
-            <GameCards
-              id="1"
-              title="sprint 1"
-              date={format(new Date(), 'dd MMM yyyy', { locale: ptBR })}
-              url=""
-              rounds={5}
-              scoresHeight={[
-                'h-[1rem]',
-                'h-[2rem]',
-                'h-[3rem]',
-                'h-[4rem]',
-                'h-[5rem]',
-                'h-[6rem]',
-                'h-[7rem]',
-                'h-[8rem]',
-                'h-[9rem]',
-                'h-[9rem]'
-              ]}
-            />
-            <GameCards
-              id="2"
-              title="sprint 2"
-              date={format(subDays(new Date(), 15), 'dd MMM yyyy', {
-                locale: ptBR
-              })}
-              url=""
-              rounds={1}
-              scoresHeight={[
-                'h-[0rem]',
-                'h-[0rem]',
-                'h-[0rem]',
-                'h-[0rem]',
-                'h-[0rem]',
-                'h-[0rem]',
-                'h-[0rem]',
-                'h-[0rem]',
-                'h-[0rem]',
-                'h-[0rem]'
-              ]}
-            />
-            <GameCards
-              id="3"
-              title="sprint 3"
-              date={format(subDays(new Date(), 30), 'dd MMM yyyy', {
-                locale: ptBR
-              })}
-              url=""
-              rounds={7}
-              scoresHeight={[
-                'h-[1rem]',
-                'h-[2rem]',
-                'h-[3rem]',
-                'h-[4rem]',
-                'h-[5rem]',
-                'h-[6rem]',
-                'h-[7rem]',
-                'h-[8rem]',
-                'h-[9rem]',
-                'h-[90rem]'
-              ]}
-            />
-          </div>
-        </section>
-      </main>
+                <GameCards
+                  id="1"
+                  title="sprint 1"
+                  date={format(new Date(), 'dd MMM yyyy', { locale: ptBR })}
+                  url=""
+                  rounds={5}
+                  scoresHeight={[
+                    'h-[1rem]',
+                    'h-[2rem]',
+                    'h-[3rem]',
+                    'h-[4rem]',
+                    'h-[5rem]',
+                    'h-[6rem]',
+                    'h-[7rem]',
+                    'h-[8rem]',
+                    'h-[9rem]',
+                    'h-[9rem]'
+                  ]}
+                />
+                <GameCards
+                  id="2"
+                  title="sprint 2"
+                  date={format(subDays(new Date(), 15), 'dd MMM yyyy', {
+                    locale: ptBR
+                  })}
+                  url=""
+                  rounds={1}
+                  scoresHeight={[
+                    'h-[0rem]',
+                    'h-[0rem]',
+                    'h-[0rem]',
+                    'h-[0rem]',
+                    'h-[0rem]',
+                    'h-[0rem]',
+                    'h-[0rem]',
+                    'h-[0rem]',
+                    'h-[0rem]',
+                    'h-[0rem]'
+                  ]}
+                />
+                <GameCards
+                  id="3"
+                  title="sprint 3"
+                  date={format(subDays(new Date(), 30), 'dd MMM yyyy', {
+                    locale: ptBR
+                  })}
+                  url=""
+                  rounds={7}
+                  scoresHeight={[
+                    'h-[1rem]',
+                    'h-[2rem]',
+                    'h-[3rem]',
+                    'h-[4rem]',
+                    'h-[5rem]',
+                    'h-[6rem]',
+                    'h-[7rem]',
+                    'h-[8rem]',
+                    'h-[9rem]',
+                    'h-[90rem]'
+                  ]}
+                />
+              </div>
+            </section>
+          </main>
+        </>
+      )}
     </>
   )
 }

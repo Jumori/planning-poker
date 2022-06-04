@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, CaretDown } from 'phosphor-react'
+import { CaretDown } from 'phosphor-react'
 import toast from 'react-hot-toast'
 
 import { HeaderDropdown } from './Dropdown'
@@ -8,11 +8,17 @@ import headerImg from '../../assets/undraw_playing_cards_cywn.svg'
 
 interface HeaderProps {
   username: string
+  avatar: string
   roomName?: string
   roomCode?: string | undefined
 }
 
-export const Header = ({ username, roomName, roomCode }: HeaderProps) => {
+export const Header = ({
+  username,
+  avatar,
+  roomName,
+  roomCode
+}: HeaderProps) => {
   const navigate = useNavigate()
   const [isShowingRoomOptions, setIsShowingRoomOptions] = useState(false)
 
@@ -101,7 +107,6 @@ export const Header = ({ username, roomName, roomCode }: HeaderProps) => {
         <button
           type="button"
           className="
-          bg-zinc-300
           rounded-full
           p-2
           hover:opacity-75
@@ -110,7 +115,11 @@ export const Header = ({ username, roomName, roomCode }: HeaderProps) => {
           ease-linear"
           onClick={handleGoToDashboard}
         >
-          <User size="2.5rem" weight="regular" className="text-violet-500" />
+          <img
+            src={avatar}
+            alt={username}
+            className="h-[2.5rem] rounded-full "
+          />
         </button>
       </div>
     </header>
