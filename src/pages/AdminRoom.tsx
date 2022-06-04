@@ -31,7 +31,7 @@ const fibonacciCards = [
 export const AdminRoom = () => {
   const { id } = useParams<AdminRoomParams>()
   const [votingSystemOptions, setVotingSystemOptions] = useState<string[]>([])
-  const [players, setPlayers] = useState<PlayersData[]>([])
+  const [players, setPlayers] = useState<PlayersData[][]>([])
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [isShowingCards, setIsShowingCards] = useState(false)
 
@@ -50,7 +50,8 @@ export const AdminRoom = () => {
 
   useEffect(() => {
     setVotingSystemOptions(fibonacciCards)
-    setPlayers([
+
+    const roomPlayers: PlayersData[] = [
       {
         id: '2',
         name: 'John Doe'
@@ -87,7 +88,17 @@ export const AdminRoom = () => {
         id: '10',
         name: 'John Dix'
       }
-    ])
+    ]
+
+    const parsedPlayers = roomPlayers.reduce(
+      (playersByCategory, player, idx) => {
+        playersByCategory[idx % 4].push(player)
+        return [...playersByCategory]
+      },
+      [[], [], [], []] as PlayersData[][]
+    )
+
+    setPlayers(parsedPlayers)
   }, [])
 
   return (
@@ -101,12 +112,46 @@ export const AdminRoom = () => {
               <div></div>
 
               {/* Left */}
-              <div className="flex items-center justify-end">02</div>
+              <div className="flex flex-col items-end justify-center">
+                <div className="flex flex-col">
+                  {players[2].map(player => (
+                    <div
+                      key={player.id}
+                      className="flex flex-col items-center justify-center"
+                    >
+                      <span className="text-sm">{player.name}</span>
+                      <PokerCards
+                        label={selectedOption || ''}
+                        isActive={!!selectedOption}
+                        isShowingValue={isShowingCards}
+                        isClickable={false}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div></div>
 
               {/* Top */}
-              <div className="flex items-end justify-center">04</div>
-              <div className="h-40 w-full bg-zinc-200 rounded-md flex items-center justify-center">
+              <div className="flex items-end justify-center">
+                <div className="flex">
+                  {players[1].map(player => (
+                    <div
+                      key={player.id}
+                      className="flex flex-col items-center justify-center"
+                    >
+                      <span className="text-sm">{player.name}</span>
+                      <PokerCards
+                        label={selectedOption || ''}
+                        isActive={!!selectedOption}
+                        isShowingValue={isShowingCards}
+                        isClickable={false}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="min-h-[10rem] w-full bg-zinc-200 rounded-md flex items-center justify-center">
                 {selectedOption ? (
                   <div>
                     <Button onClick={handleShowCards}>Virar as cartas</Button>
@@ -120,27 +165,51 @@ export const AdminRoom = () => {
 
               {/* Bottom */}
               <div className="flex items-start justify-center">
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-sm">John Doe</span>
-                  <PokerCards
-                    label={selectedOption || ''}
-                    isActive={!!selectedOption}
-                    isShowingValue={isShowingCards}
-                    isClickable={false}
-                  />
+                <div className="flex">
+                  {players[0].map(player => (
+                    <div
+                      key={player.id}
+                      className="flex flex-col items-center justify-center"
+                    >
+                      <span className="text-sm">{player.name}</span>
+                      <PokerCards
+                        label={selectedOption || ''}
+                        isActive={!!selectedOption}
+                        isShowingValue={isShowingCards}
+                        isClickable={false}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
               <div></div>
 
               {/* Right */}
-              <div className="flex items-center justify-start">08</div>
+              <div className="flex flex-col items-start justify-start gap-2">
+                <div className="flex flex-col">
+                  {players[3].map(player => (
+                    <div
+                      key={player.id}
+                      className="flex flex-col items-center justify-center"
+                    >
+                      <span className="text-sm">{player.name}</span>
+                      <PokerCards
+                        label={selectedOption || ''}
+                        isActive={!!selectedOption}
+                        isShowingValue={isShowingCards}
+                        isClickable={false}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div></div>
             </div>
           </div>
 
           <div>
             <p className="flex items-center justify-center gap-1">
-              Escolha sua carta{' '}
+              Escolha sua carta
               <HandPointing size="20" className="rotate-180" />
             </p>
 
