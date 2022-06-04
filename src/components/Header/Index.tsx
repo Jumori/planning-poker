@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CaretDown } from 'phosphor-react'
 import toast from 'react-hot-toast'
 
+import { useAuth } from '../../hooks/useAuth'
 import { HeaderDropdown } from './Dropdown'
 import headerImg from '../../assets/undraw_playing_cards_cywn.svg'
 
@@ -20,7 +21,9 @@ export const Header = ({
   roomCode
 }: HeaderProps) => {
   const navigate = useNavigate()
+  const { logOut } = useAuth()
   const [isShowingRoomOptions, setIsShowingRoomOptions] = useState(false)
+  const [isShowingUserOptions, setIsShowingUserOptions] = useState(false)
 
   const handleGoToDashboard = () => {
     navigate(`/dashboard`)
@@ -28,6 +31,10 @@ export const Header = ({
 
   const handleToggleShowingRoomOptions = () => {
     setIsShowingRoomOptions(!isShowingRoomOptions)
+  }
+
+  const handleToggleShowingUserOptions = () => {
+    setIsShowingUserOptions(!isShowingUserOptions)
   }
 
   const handleCopyRoomCodeToClipboard = () => {
@@ -39,6 +46,10 @@ export const Header = ({
 
   const handleFinishRoom = () => {
     console.log('handleFinishRoom')
+  }
+
+  const handleLogOut = async () => {
+    await logOut()
   }
 
   return (
@@ -94,7 +105,10 @@ export const Header = ({
                     label: 'Copiar link',
                     onClick: () => handleCopyRoomCodeToClipboard()
                   },
-                  { label: 'Encerrar sala', onClick: () => handleFinishRoom() }
+                  {
+                    label: 'Encerrar sala',
+                    onClick: () => handleFinishRoom()
+                  }
                 ]}
               />
             )}
@@ -103,24 +117,50 @@ export const Header = ({
       </div>
 
       <div className="flex items-center gap-4">
-        <span className="text-violet-500">{username}</span>
-        <button
-          type="button"
-          className="
-          rounded-full
-          p-2
-          hover:opacity-75
-          transition-all
-          duration-150
-          ease-linear"
-          onClick={handleGoToDashboard}
-        >
-          <img
-            src={avatar}
-            alt={username}
-            className="h-[2.5rem] rounded-full "
-          />
-        </button>
+        <div className="relative">
+          <button
+            className="
+              flex
+              items-center
+              gap-1
+              hover:opacity-75
+              transition-all
+              duration-150
+              ease-linear"
+            onClick={handleToggleShowingUserOptions}
+          >
+            <span className="text-violet-500">{username}</span>
+
+            <CaretDown
+              size="15"
+              className={`text-violet-500 transition-all duration-100 ease-linear ${
+                isShowingUserOptions ? 'rotate-180' : 'rotate-0'
+              }`}
+            />
+          </button>
+
+          {isShowingUserOptions && (
+            <HeaderDropdown
+              options={[
+                {
+                  label: 'Dashboard',
+                  onClick: () => handleGoToDashboard()
+                },
+                {
+                  label: 'Sair',
+                  onClick: () => handleLogOut()
+                }
+              ]}
+            />
+          )}
+        </div>
+
+        <img
+          src={avatar}
+          alt={username}
+          className="h-[2.5rem] rounded-full"
+          referrerPolicy="no-referrer"
+        />
       </div>
     </header>
   )

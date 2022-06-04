@@ -1,7 +1,13 @@
 import React, { createContext, ReactNode, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
-import { auth, GoogleAuthProvider, signInWithPopup } from '../services/firebase'
+import {
+  auth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut
+} from '../services/firebase'
 import userImg from '../assets/user.svg'
 
 type User = {
@@ -13,6 +19,7 @@ type User = {
 export type AuthContextType = {
   user: User | undefined
   signInWithGoogle: () => Promise<User | null>
+  logOut: () => Promise<void>
 }
 
 type AuthContextProviderProps = {
@@ -22,6 +29,8 @@ type AuthContextProviderProps = {
 export const AuthContext = createContext({} as AuthContextType)
 
 export const AuthContextProvider = (props: AuthContextProviderProps) => {
+  const navigate = useNavigate()
+
   const [user, setUser] = useState<User>()
 
   const signInWithGoogle = async () => {
@@ -53,6 +62,15 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
     }
   }
 
+  const logOut = async () => {
+    try {
+      await signOut(auth)
+      setUser(undefined)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       try {
@@ -68,6 +86,9 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
             name: displayName,
             avatar: photoURL || userImg
           })
+        } else {
+          toast.error('Sessão expirada')
+          navigate('/')
         }
       } catch (error) {
         console.log(error)
@@ -83,7 +104,7 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, signInWithGoogle }}>
+    <AuthContext.Provider value={{ user, signInWithGoogle, logOut }}>
       {props.children}
     </AuthContext.Provider>
   )

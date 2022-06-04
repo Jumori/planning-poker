@@ -9,7 +9,7 @@ interface HeaderDropdownProps {
 
 export const HeaderDropdown = ({ options }: HeaderDropdownProps) => {
   return (
-    <div className="absolute top-8 bg-zinc-300 rounded-md">
+    <div className="absolute top-8 bg-zinc-300 rounded-md w-full">
       <nav>
         <ul className="py-2">
           {options.map(option => (
@@ -26,7 +26,7 @@ export const HeaderDropdown = ({ options }: HeaderDropdownProps) => {
             "
             >
               <button
-                className="text-left text-[0.75rem]"
+                className="text-left text-[0.75rem] w-full"
                 type="button"
                 onClick={option.onClick}
               >

@@ -1,5 +1,10 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut
+} from 'firebase/auth'
 // import { getDatabase } from 'firebase/database'
 
 const firebaseConfig = {
@@ -17,4 +22,4 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 // const database = getDatabase(app)
 
-export { auth, GoogleAuthProvider, signInWithPopup }
+export { auth, GoogleAuthProvider, signInWithPopup, signOut }

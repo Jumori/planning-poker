@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PlusCircle } from 'phosphor-react'
 import { format, subDays } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import toast from 'react-hot-toast'
 
 import { useAuth } from '../hooks/useAuth'
 import { Header } from '../components/Header/Index'
@@ -16,13 +15,6 @@ export const Dashboard = () => {
   const handleNewRoom = () => {
     navigate(`/admin/rooms/df8f4ed7-d2a1-43b1-bd5e-00b0d40296fd`)
   }
-
-  useEffect(() => {
-    if (!user) {
-      toast.error('Sessão expirada')
-      navigate('/')
-    }
-  }, [])
 
   return (
     <>
