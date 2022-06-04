@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom'
 import { HandPointing } from 'phosphor-react'
 import { Button } from '../components/Common/Button'
 import { Header } from '../components/Header/Index'
-import { PokerCards } from '../components/PokerCards'
+import { PokerCards } from '../components/Poker/Cards'
+import { PokerTable } from '../components/Poker/Table'
 
 type AdminRoomParams = {
   id: string
@@ -12,6 +13,7 @@ type AdminRoomParams = {
 type PlayersData = {
   id: string
   name: string
+  selectedCard: string | null
 }
 
 const fibonacciCards = [
@@ -54,39 +56,48 @@ export const AdminRoom = () => {
     const roomPlayers: PlayersData[] = [
       {
         id: '2',
-        name: 'John Doe'
+        name: 'John Doe',
+        selectedCard: null
       },
       {
         id: '3',
-        name: 'John Trois'
+        name: 'John Trois',
+        selectedCard: null
       },
       {
         id: '4',
-        name: 'John Quatre'
+        name: 'John Quatre',
+        selectedCard: null
       },
       {
         id: '5',
-        name: 'John Cinq'
+        name: 'John Cinq',
+        selectedCard: null
       },
       {
         id: '6',
-        name: 'John Six'
+        name: 'John Six',
+        selectedCard: null
       },
       {
         id: '7',
-        name: 'John Sept'
+        name: 'John Sept',
+        selectedCard: null
       },
       {
         id: '8',
-        name: 'John Huit'
+        name: 'John Huit',
+        selectedCard: null
       },
       {
         id: '9',
-        name: 'John Neuf'
+        name: 'John Neuf',
+        selectedCard: null
       },
       {
         id: '10',
-        name: 'John Dix'
+        name: 'John Dix',
+        selectedCard: null
       }
     ]
 
@@ -108,103 +119,12 @@ export const AdminRoom = () => {
       <main className="py-4 px-10">
         <section>
           <div className="flex items-center justify-center">
-            <div className="w-[75%] grid grid-rows-3 grid-flow-col gap-8">
-              <div></div>
-
-              {/* Left */}
-              <div className="flex flex-col items-end justify-center">
-                <div className="flex flex-col">
-                  {players[2].map(player => (
-                    <div
-                      key={player.id}
-                      className="flex flex-col items-center justify-center"
-                    >
-                      <span className="text-sm">{player.name}</span>
-                      <PokerCards
-                        label={selectedOption || ''}
-                        isActive={!!selectedOption}
-                        isShowingValue={isShowingCards}
-                        isClickable={false}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div></div>
-
-              {/* Top */}
-              <div className="flex items-end justify-center">
-                <div className="flex">
-                  {players[1].map(player => (
-                    <div
-                      key={player.id}
-                      className="flex flex-col items-center justify-center"
-                    >
-                      <span className="text-sm">{player.name}</span>
-                      <PokerCards
-                        label={selectedOption || ''}
-                        isActive={!!selectedOption}
-                        isShowingValue={isShowingCards}
-                        isClickable={false}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="min-h-[10rem] w-full bg-zinc-200 rounded-md flex items-center justify-center">
-                {selectedOption ? (
-                  <div>
-                    <Button onClick={handleShowCards}>Virar as cartas</Button>
-                  </div>
-                ) : (
-                  <div>
-                    <span className="text-violet-500">Escolha sua carta!</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom */}
-              <div className="flex items-start justify-center">
-                <div className="flex">
-                  {players[0].map(player => (
-                    <div
-                      key={player.id}
-                      className="flex flex-col items-center justify-center"
-                    >
-                      <span className="text-sm">{player.name}</span>
-                      <PokerCards
-                        label={selectedOption || ''}
-                        isActive={!!selectedOption}
-                        isShowingValue={isShowingCards}
-                        isClickable={false}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div></div>
-
-              {/* Right */}
-              <div className="flex flex-col items-start justify-start gap-2">
-                <div className="flex flex-col">
-                  {players[3].map(player => (
-                    <div
-                      key={player.id}
-                      className="flex flex-col items-center justify-center"
-                    >
-                      <span className="text-sm">{player.name}</span>
-                      <PokerCards
-                        label={selectedOption || ''}
-                        isActive={!!selectedOption}
-                        isShowingValue={isShowingCards}
-                        isClickable={false}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div></div>
-            </div>
+            <PokerTable
+              players={players}
+              isShowingCards={isShowingCards}
+              isShowingToggleButton={!!selectedOption}
+              handleShowCards={() => handleShowCards}
+            />
           </div>
 
           <div>
