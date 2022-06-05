@@ -12,6 +12,7 @@ import { useAuth } from '../hooks/useAuth'
 import { Header } from '../components/Header/Index'
 import { GameCards } from '../components/Dashboard/GameCards'
 import { Button } from '../components/Common/Button'
+import { Input } from '../components/Common/Input'
 
 type PokerFormData = {
   pokerRoomName: string
@@ -197,35 +198,13 @@ export const Dashboard = () => {
                           handleCreateRoom(data as PokerFormData)
                         )}
                       >
-                        <div className="flex flex-col mb-4">
-                          <span className="text-zinc-500">Nome da sala</span>
-                          <input
-                            type="text"
-                            className={`
-                              h-12
-                              w-full
-                              placeholder-zinc-400
-                              text-zinc-500
-                              border-zinc-600
-                              bg-transparent
-                              rounded-md
-                              focus:border-violet-500
-                              focus:ring-violet-500
-                              focus:ring-1
-                              focus:outline-none
-                              ${
-                                errors.pokerRoomName &&
-                                'border-red-500 text-red-500'
-                              }
-                            `}
-                            {...register('pokerRoomName')}
-                          />
-                          {errors.pokerRoomName && (
-                            <span className="text-sm text-red-600">
-                              {errors.pokerRoomName.message}
-                            </span>
-                          )}
-                        </div>
+                        <Input
+                          label="Nome da sala"
+                          name="pokerRoomName"
+                          register={name => register(name)}
+                          errors={errors.pokerRoomName}
+                        />
+
                         <div className="flex flex-col mb-4">
                           <span className="text-zinc-500">
                             Sistema de votação

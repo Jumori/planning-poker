@@ -8,6 +8,7 @@ import * as Yup from 'yup'
 
 import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/Common/Button'
+import { Input } from '../components/Common/Input'
 import homeImg from '../assets/undraw_scrum_board_re_wk7v.svg'
 
 type FormData = {
@@ -113,58 +114,18 @@ export const Home = () => {
             onSubmit={handleSubmit(data => handleJoinGame(data as FormData))}
             className="flex flex-col"
           >
-            <div className="flex flex-col mb-4">
-              <input
-                type="text"
-                placeholder="Digite seu nome"
-                className={`
-                h-12
-                w-full
-                placeholder-zinc-400
-                text-zinc-500
-                border-zinc-600
-                bg-transparent
-                rounded-md
-                focus:border-violet-500
-                focus:ring-violet-500
-                focus:ring-1
-                focus:outline-none
-                ${errors.username && 'border-red-500 text-red-500'}
-              `}
-                {...register('username')}
-              />
-              {errors.username && (
-                <span className="text-sm text-red-600">
-                  {errors.username.message}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col mb-4">
-              <input
-                type="text"
-                placeholder="Digite o código da sala"
-                className={`
-                h-12
-                w-full
-                placeholder-zinc-400
-                text-zinc-500
-                border-zinc-600
-                bg-transparent
-                rounded-md
-                focus:border-violet-500
-                focus:ring-violet-500
-                focus:ring-1
-                focus:outline-none
-                ${errors.pokerRoomCode && 'border-red-500 text-red-500'}
-              `}
-                {...register('pokerRoomCode')}
-              />
-              {errors.pokerRoomCode && (
-                <span className="text-sm text-red-600">
-                  {errors.pokerRoomCode.message}
-                </span>
-              )}
-            </div>
+            <Input
+              placeholder="Digite seu nome"
+              name="username"
+              errors={errors.username}
+              register={name => register(name)}
+            />
+            <Input
+              placeholder="Digite o código da sala"
+              name="pokerRoomCode"
+              errors={errors.pokerRoomCode}
+              register={name => register(name)}
+            />
 
             <Button type="submit" color="bg-violet-600" text-color="text-white">
               Entrar na Sala
