@@ -11,16 +11,18 @@ import { Button } from '../components/Common/Button'
 import homeImg from '../assets/undraw_scrum_board_re_wk7v.svg'
 
 type FormData = {
-  gameCode: string
+  username: string
+  pokerRoomCode: string
 }
 
 const schema = Yup.object().shape({
-  gameCode: Yup.string().required('Código obrigatório')
+  username: Yup.string().required('Nome obrigatório'),
+  pokerRoomCode: Yup.string().required('Código obrigatório')
 })
 
 export const Home = () => {
   const navigate = useNavigate()
-  const { user, signInWithGoogle } = useAuth()
+  const { user, signInWithGoogle, signInAsAnonymous } = useAuth()
 
   const {
     register,
@@ -31,7 +33,7 @@ export const Home = () => {
   })
 
   const handleCreateGame = async () => {
-    if (user) {
+    if (user && !user.isAnonymous) {
       navigate(`/dashboard`)
     } else {
       const userStatus = await signInWithGoogle()
@@ -39,11 +41,11 @@ export const Home = () => {
     }
   }
 
-  const handleJoinGame = (data: FormData) => {
+  const handleJoinGame = async ({ username, pokerRoomCode }: FormData) => {
     try {
-      console.log('handleJoinRoom', data)
-      toast.success('Entrando na sala...')
-      navigate(`/games/${data.gameCode}`)
+      const userStatus = await signInAsAnonymous(username)
+      if (userStatus) navigate(`/poker/${pokerRoomCode}`)
+      else throw new Error('Invalid anonymous user')
     } catch (error) {
       console.log(error)
       toast.error('Não foi possível acessar sala')
@@ -114,6 +116,32 @@ export const Home = () => {
             <div className="flex flex-col mb-4">
               <input
                 type="text"
+                placeholder="Digite seu nome"
+                className={`
+                h-12
+                w-full
+                placeholder-zinc-400
+                text-zinc-500
+                border-zinc-600
+                bg-transparent
+                rounded-md
+                focus:border-violet-500
+                focus:ring-violet-500
+                focus:ring-1
+                focus:outline-none
+                ${errors.username && 'border-red-500 text-red-500'}
+              `}
+                {...register('username')}
+              />
+              {errors.username && (
+                <span className="text-sm text-red-600">
+                  {errors.username.message}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col mb-4">
+              <input
+                type="text"
                 placeholder="Digite o código da sala"
                 className={`
                 h-12
@@ -127,13 +155,13 @@ export const Home = () => {
                 focus:ring-violet-500
                 focus:ring-1
                 focus:outline-none
-                ${errors.gameCode && 'border-red-500 text-red-500'}
+                ${errors.pokerRoomCode && 'border-red-500 text-red-500'}
               `}
-                {...register('gameCode')}
+                {...register('pokerRoomCode')}
               />
-              {errors.gameCode && (
+              {errors.pokerRoomCode && (
                 <span className="text-sm text-red-600">
-                  {errors.gameCode.message}
+                  {errors.pokerRoomCode.message}
                 </span>
               )}
             </div>

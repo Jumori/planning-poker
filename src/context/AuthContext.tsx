@@ -6,7 +6,9 @@ import {
   auth,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut
+  signOut,
+  signInAnonymously,
+  updateProfile
 } from '../services/firebase'
 import userImg from '../assets/user.svg'
 
@@ -14,11 +16,13 @@ type User = {
   id: string
   name: string
   avatar: string
+  isAnonymous: boolean
 }
 
 export type AuthContextType = {
   user: User | undefined
   signInWithGoogle: () => Promise<User | null>
+  signInAsAnonymous: (username: string) => Promise<User | null>
   logOut: () => Promise<void>
 }
 
@@ -41,7 +45,7 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
 
       if (!result.user) return null
 
-      const { displayName, photoURL, uid } = result.user
+      const { displayName, photoURL, uid, isAnonymous } = result.user
 
       if (!displayName) {
         throw new Error('Missing account information.')
@@ -50,7 +54,44 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
       const userData = {
         id: uid,
         name: displayName,
-        avatar: photoURL || userImg
+        avatar: photoURL || userImg,
+        isAnonymous
+      }
+
+      setUser(userData)
+
+      return userData
+    } catch (error) {
+      console.log(error)
+      return null
+    }
+  }
+
+  const signInAsAnonymous = async (username: string) => {
+    try {
+      const result = await signInAnonymously(auth)
+      console.log(result)
+
+      if (!result.user) return null
+
+      const { uid } = result.user
+
+      await updateProfile(result.user, {
+        displayName: username
+      })
+
+      const { displayName, isAnonymous } = result.user
+      console.log(displayName)
+
+      if (!displayName) {
+        throw new Error('Missing account information.')
+      }
+
+      const userData = {
+        id: uid,
+        name: displayName,
+        avatar: userImg,
+        isAnonymous
       }
 
       setUser(userData)
@@ -75,7 +116,7 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       try {
         if (user) {
-          const { displayName, photoURL, uid } = user
+          const { displayName, photoURL, uid, isAnonymous } = user
 
           if (!displayName) {
             throw new Error('Missing account information.')
@@ -84,7 +125,8 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
           setUser({
             id: uid,
             name: displayName,
-            avatar: photoURL || userImg
+            avatar: photoURL || userImg,
+            isAnonymous
           })
         } else {
           toast.error('Sessão expirada')
@@ -104,7 +146,9 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, signInWithGoogle, logOut }}>
+    <AuthContext.Provider
+      value={{ user, signInWithGoogle, signInAsAnonymous, logOut }}
+    >
       {props.children}
     </AuthContext.Provider>
   )

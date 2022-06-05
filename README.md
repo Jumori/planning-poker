@@ -33,7 +33,7 @@ Planeje as sprints junto ao seu time de forma produtiva com a ferramenta de plan
 
 O layout da aplicação está disponível no Figma:
 
-<a href="https://www.figma.com/file/lvHI2foah9ZKcHNCyT6Sut/planpoker?node-id=0%3A1">
+<a href="https://www.figma.com/file/lvHI2foah9ZKcHNCyT6Sut/Planning-Poker?node-id=0%3A1">
   <img alt="Figma" src="https://img.shields.io/badge/Acessar%20Layout%20-Figma-%2304D361">
 </a>
 
@@ -70,6 +70,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
 
 -   **[Vite](https://vitejs.dev/)**
 -   **[Tailwind](https://tailwindcss.com/)**
+-   **[Firebase](https://firebase.google.com/)**
 
 > Veja o arquivo  [package.json](https://github.com/Jumori/planpoker/blob/master/package.json)
 
