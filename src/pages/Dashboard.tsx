@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PlusCircle } from 'phosphor-react'
 import { format, subDays } from 'date-fns'
@@ -13,6 +13,7 @@ import { Header } from '../components/Header/Index'
 import { GameCards } from '../components/Dashboard/GameCards'
 import { Button } from '../components/Common/Button'
 import { Input } from '../components/Common/Input'
+import { Select } from '../components/Common/Select'
 
 type PokerFormData = {
   pokerRoomName: string
@@ -28,7 +29,8 @@ export const Dashboard = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm({
     resolver: yupResolver(pokerSchema)
   })
@@ -37,9 +39,13 @@ export const Dashboard = () => {
   const { user } = useAuth()
   const [isCreatingRoom, setIsCreatingRoom] = useState(false)
 
-  const handleCreateRoom = ({ pokerRoomName }: PokerFormData) => {
+  const handleCreateRoom = ({ pokerRoomName, votingSystem }: PokerFormData) => {
     navigate(`/admin/poker/${pokerRoomName}`)
   }
+
+  useEffect(() => {
+    reset()
+  }, [isCreatingRoom])
 
   return (
     <>
@@ -204,42 +210,19 @@ export const Dashboard = () => {
                           register={name => register(name)}
                           errors={errors.pokerRoomName}
                         />
-
-                        <div className="flex flex-col mb-4">
-                          <span className="text-zinc-500">
-                            Sistema de votação
-                          </span>
-                          <select
-                            className={`
-                              h-12
-                              w-full
-                              placeholder-zinc-400
-                              text-zinc-500
-                              border-zinc-600
-                              bg-transparent
-                              rounded-md
-                              focus:border-violet-500
-                              focus:ring-violet-500
-                              focus:ring-1
-                              focus:outline-none
-                              ${
-                                errors.votingSystem &&
-                                'border-red-500 text-red-500'
-                              }
-                            `}
-                            {...register('votingSystem')}
-                          >
-                            <option value="fibonacci">
-                              Fibonacci (1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?)
-                            </option>
-                          </select>
-
-                          {errors.votingSystem && (
-                            <span className="text-sm text-red-600">
-                              {errors.votingSystem.message}
-                            </span>
-                          )}
-                        </div>
+                        <Select
+                          label="Sistema de votação"
+                          name="votingSystem"
+                          options={[
+                            {
+                              label:
+                                'Fibonacci (1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?)',
+                              value: 'fibonacci'
+                            }
+                          ]}
+                          register={name => register(name)}
+                          errors={errors.votingSystem}
+                        />
 
                         <div className="mt-4">
                           <Button
