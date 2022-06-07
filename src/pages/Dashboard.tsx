@@ -54,13 +54,12 @@ export const Dashboard = () => {
       const pokerRoomId = uuidv4()
       const pokerRoomsRef = ref(database, `pokerRooms/${pokerRoomId}`)
       await set(pokerRoomsRef, {
-        pokerRoomId,
         title: pokerRoomName,
         votingSystem,
         ownerId: user?.id
       })
 
-      navigate(`/admin/poker/${pokerRoomId}`)
+      navigate(`/poker-room/${pokerRoomId}`)
     } catch (error) {
       console.log(error)
       toast.error('Não foi possível criar uma sala')

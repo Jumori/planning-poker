@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { HandPointing } from 'phosphor-react'
-import { Button } from '../components/Common/Button'
+import toast from 'react-hot-toast'
+
+import { useAuth } from '../hooks/useAuth'
+import { usePokerRoom, votingSystems } from '../hooks/usePokerRoom'
 import { Header } from '../components/Header/Index'
 import { PokerCards } from '../components/Poker/Cards'
 import { PokerTable } from '../components/Poker/Table'
 
-type AdminRoomParams = {
+type PokerRoomParams = {
   id: string
 }
 
@@ -16,22 +19,12 @@ type PlayersData = {
   selectedCard: string | null
 }
 
-const fibonacciCards = [
-  '1',
-  '2',
-  '3',
-  '5',
-  '8',
-  '13',
-  '21',
-  '34',
-  '55',
-  '89',
-  '?'
-]
+export const PokerRoom = () => {
+  const { id } = useParams<PokerRoomParams>()
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const { title, votingSystem } = usePokerRoom(id)
 
-export const AdminRoom = () => {
-  const { id } = useParams<AdminRoomParams>()
   const [votingSystemOptions, setVotingSystemOptions] = useState<string[]>([])
   const [players, setPlayers] = useState<PlayersData[][]>([])
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
@@ -51,7 +44,9 @@ export const AdminRoom = () => {
   }
 
   useEffect(() => {
-    setVotingSystemOptions(fibonacciCards)
+    if (votingSystem === '') return
+
+    setVotingSystemOptions(votingSystems[votingSystem])
 
     const roomPlayers: PlayersData[] = [
       {
@@ -110,42 +105,51 @@ export const AdminRoom = () => {
     )
 
     setPlayers(parsedPlayers)
-  }, [])
+  }, [votingSystem])
 
   return (
     <>
-      <Header username="John Doe" roomName="Meu jogo" roomCode={id} />
+      {user && (
+        <>
+          <Header
+            username={user.name}
+            avatar={user.avatar}
+            roomCode={id}
+            roomName={title}
+          />
 
-      <main className="py-4 px-10">
-        <section>
-          <div className="flex items-center justify-center">
-            <PokerTable
-              players={players}
-              isShowingCards={isShowingCards}
-              isShowingToggleButton={!!selectedOption}
-              handleShowCards={() => handleShowCards}
-            />
-          </div>
-
-          <div>
-            <p className="flex items-center justify-center gap-1">
-              Escolha sua carta
-              <HandPointing size="20" className="rotate-180" />
-            </p>
-
-            <div className="flex justify-center items-center gap-2 my-4">
-              {votingSystemOptions.map(card => (
-                <PokerCards
-                  key={card}
-                  label={card}
-                  isActive={selectedOption === card}
-                  selectCard={() => handleSelectCard(card)}
+          <main className="py-4 px-10">
+            <section>
+              <div className="flex items-center justify-center">
+                <PokerTable
+                  players={players}
+                  isShowingCards={isShowingCards}
+                  isShowingToggleButton={!!selectedOption}
+                  handleShowCards={() => handleShowCards}
                 />
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
+              </div>
+
+              <div>
+                <p className="flex items-center justify-center gap-1">
+                  Escolha sua carta
+                  <HandPointing size="20" className="rotate-180" />
+                </p>
+
+                <div className="flex justify-center items-center gap-2 my-4">
+                  {votingSystemOptions.map(card => (
+                    <PokerCards
+                      key={card}
+                      label={card}
+                      isActive={selectedOption === card}
+                      selectCard={() => handleSelectCard(card)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </section>
+          </main>
+        </>
+      )}
     </>
   )
 }

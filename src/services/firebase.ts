@@ -7,7 +7,7 @@ import {
   signInAnonymously,
   updateProfile
 } from 'firebase/auth'
-import { getDatabase, ref, set } from 'firebase/database'
+import { getDatabase, ref, set, onValue } from 'firebase/database'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -33,5 +33,6 @@ export {
   updateProfile,
   database,
   ref,
-  set
+  set,
+  onValue
 }

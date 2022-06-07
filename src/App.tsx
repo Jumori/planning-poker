@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast'
 
 import { Home } from './pages/Home'
 import { Dashboard } from './pages/Dashboard'
-import { AdminRoom } from './pages/AdminRoom'
+import { PokerRoom } from './pages/PokerRoom'
 
 import { AuthContextProvider } from './context/AuthContext'
 
@@ -23,7 +23,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin/rooms/:id" element={<AdminRoom />} />
+          <Route path="/poker-room/:id" element={<PokerRoom />} />
         </Routes>
       </AuthContextProvider>
     </BrowserRouter>
