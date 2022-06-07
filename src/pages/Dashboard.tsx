@@ -7,8 +7,12 @@ import { Dialog, Transition } from '@headlessui/react'
 import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import toast from 'react-hot-toast'
+import { v4 as uuidv4 } from 'uuid'
 
 import { useAuth } from '../hooks/useAuth'
+import { database, ref, set } from '../services/firebase'
+
 import { Header } from '../components/Header/Index'
 import { GameCards } from '../components/Dashboard/GameCards'
 import { Button } from '../components/Common/Button'
@@ -21,7 +25,10 @@ type PokerFormData = {
 }
 
 const pokerSchema = Yup.object().shape({
-  pokerRoomName: Yup.string().required('Nome obrigatório'),
+  pokerRoomName: Yup.string()
+    .required('Nome da sala obrigatório')
+    .min(3, 'Nome da sala deve ter no mínimo 3 caracteres')
+    .max(20, 'Nome da sala deve ter no máximo 20 caracteres'),
   votingSystem: Yup.string().required('Campo obrigatório')
 })
 
@@ -39,8 +46,25 @@ export const Dashboard = () => {
   const { user } = useAuth()
   const [isCreatingRoom, setIsCreatingRoom] = useState(false)
 
-  const handleCreateRoom = ({ pokerRoomName, votingSystem }: PokerFormData) => {
-    navigate(`/admin/poker/${pokerRoomName}`)
+  const handleCreateRoom = async ({
+    pokerRoomName,
+    votingSystem
+  }: PokerFormData) => {
+    try {
+      const pokerRoomId = uuidv4()
+      const pokerRoomsRef = ref(database, `pokerRooms/${pokerRoomId}`)
+      await set(pokerRoomsRef, {
+        pokerRoomId,
+        title: pokerRoomName,
+        votingSystem,
+        ownerId: user?.id
+      })
+
+      navigate(`/admin/poker/${pokerRoomId}`)
+    } catch (error) {
+      console.log(error)
+      toast.error('Não foi possível criar uma sala')
+    }
   }
 
   useEffect(() => {
