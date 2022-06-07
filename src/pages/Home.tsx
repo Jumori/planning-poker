@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
 import { useAuth } from '../hooks/useAuth'
+import { database, ref, update } from '../services/firebase'
 import { Button } from '../components/Common/Button'
 import { Input } from '../components/Common/Input'
 import homeImg from '../assets/undraw_scrum_board_re_wk7v.svg'
@@ -45,8 +46,17 @@ export const Home = () => {
   const handleJoinGame = async ({ username, pokerRoomCode }: FormData) => {
     try {
       const userStatus = await signInAsAnonymous(username)
-      if (userStatus) navigate(`/poker/${pokerRoomCode}`)
-      else throw new Error('Invalid anonymous user')
+      if (!userStatus || !user || !user.id) {
+        throw new Error('Invalid anonymous user')
+      }
+
+      await update(ref(database), {
+        [`pokerRooms/${pokerRoomCode}/players/${user.id}`]: {
+          name: user.name
+        }
+      })
+
+      navigate(`/poker-room/${pokerRoomCode}`)
     } catch (error) {
       console.log(error)
       toast.error('Não foi possível acessar sala')

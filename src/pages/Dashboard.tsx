@@ -51,12 +51,26 @@ export const Dashboard = () => {
     votingSystem
   }: PokerFormData) => {
     try {
+      if (!user?.id) {
+        throw new Error('Invalid user')
+      }
+
       const pokerRoomId = uuidv4()
-      const pokerRoomsRef = ref(database, `pokerRooms/${pokerRoomId}`)
-      await set(pokerRoomsRef, {
+      const pokerRoomRef = ref(database, `pokerRooms/${pokerRoomId}`)
+      await set(pokerRoomRef, {
         title: pokerRoomName,
         votingSystem,
         ownerId: user?.id
+      })
+
+      const pokerRoomPlayersRef = ref(
+        database,
+        `pokerRooms/${pokerRoomId}/players`
+      )
+      await set(pokerRoomPlayersRef, {
+        [user.id]: {
+          name: user.name
+        }
       })
 
       navigate(`/poker-room/${pokerRoomId}`)
