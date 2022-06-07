@@ -70,24 +70,29 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
   const signInAsAnonymous = async (username: string) => {
     try {
       const result = await signInAnonymously(auth)
-      if (!result.user) return null
+      if (!result.user) {
+        throw new Error('Invalid user')
+      }
 
-      const { uid } = result.user
       await updateProfile(result.user, {
         displayName: username
       })
 
-      const { displayName, isAnonymous } = result.user
+      const updatedUser = auth.currentUser
 
-      if (!displayName) {
+      if (!updatedUser) {
+        throw new Error('Invalid user')
+      }
+
+      if (!updatedUser.displayName) {
         throw new Error('Missing account information.')
       }
 
       const userData = {
-        id: uid,
-        name: displayName,
+        id: updatedUser.uid,
+        name: updatedUser.displayName,
         avatar: userImg,
-        isAnonymous
+        isAnonymous: updatedUser.isAnonymous
       }
 
       setUser(userData)

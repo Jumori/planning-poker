@@ -46,13 +46,13 @@ export const Home = () => {
   const handleJoinGame = async ({ username, pokerRoomCode }: FormData) => {
     try {
       const userStatus = await signInAsAnonymous(username)
-      if (!userStatus || !user || !user.id) {
+      if (!userStatus) {
         throw new Error('Invalid anonymous user')
       }
 
       await update(ref(database), {
-        [`pokerRooms/${pokerRoomCode}/players/${user.id}`]: {
-          name: user.name
+        [`pokerRooms/${pokerRoomCode}/players/${userStatus.id}`]: {
+          name: userStatus.name
         }
       })
 
