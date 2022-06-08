@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { HandPointing } from 'phosphor-react'
-import toast from 'react-hot-toast'
 
 import { useAuth } from '../hooks/useAuth'
 import { usePokerRoom, votingSystems } from '../hooks/usePokerRoom'
+import { database, ref, update } from '../services/firebase'
+
 import { Header } from '../components/Header/Index'
 import { PokerCards } from '../components/Poker/Cards'
 import { PokerTable } from '../components/Poker/Table'
@@ -13,7 +14,7 @@ type PokerRoomParams = {
   id: string
 }
 
-type PlayersData = {
+type TablePlayersData = {
   id: string
   name: string
   selectedCard: string | null
@@ -21,20 +22,40 @@ type PlayersData = {
 
 export const PokerRoom = () => {
   const { id } = useParams<PokerRoomParams>()
-  const navigate = useNavigate()
   const { user } = useAuth()
-  const { title, votingSystem } = usePokerRoom(id)
+  const { title, votingSystem, players, owner } = usePokerRoom(id)
 
   const [votingSystemOptions, setVotingSystemOptions] = useState<string[]>([])
-  const [players, setPlayers] = useState<PlayersData[][]>([])
+  const [tablePlayers, setTablePlayers] = useState<TablePlayersData[][]>([])
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [isShowingCards, setIsShowingCards] = useState(false)
 
-  const handleSelectCard = (value: string) => {
+  const handleSelectCard = async (value: string) => {
     if (isShowingCards) return
 
-    if (selectedOption !== value) setSelectedOption(value)
-    else setSelectedOption(null)
+    const tableUser = tablePlayers
+      .flat()
+      .find(tableUser => tableUser.id === user?.id)
+
+    if (!tableUser) return
+    if (tableUser.selectedCard !== value) {
+      await update(ref(database), {
+        [`pokerRooms/${id}/players/${user?.id}`]: {
+          name: user?.name,
+          selectedCard: value
+        }
+      })
+
+      setSelectedOption(value)
+    } else {
+      await update(ref(database), {
+        [`pokerRooms/${id}/players/${user?.id}`]: {
+          name: user?.name,
+          selectedCard: null
+        }
+      })
+      setSelectedOption(null)
+    }
   }
 
   const handleShowCards = () => {
@@ -48,64 +69,18 @@ export const PokerRoom = () => {
 
     setVotingSystemOptions(votingSystems[votingSystem])
 
-    const roomPlayers: PlayersData[] = [
-      {
-        id: '2',
-        name: 'John Doe',
-        selectedCard: null
-      },
-      {
-        id: '3',
-        name: 'John Trois',
-        selectedCard: null
-      },
-      {
-        id: '4',
-        name: 'John Quatre',
-        selectedCard: null
-      },
-      {
-        id: '5',
-        name: 'John Cinq',
-        selectedCard: null
-      },
-      {
-        id: '6',
-        name: 'John Six',
-        selectedCard: null
-      },
-      {
-        id: '7',
-        name: 'John Sept',
-        selectedCard: null
-      },
-      {
-        id: '8',
-        name: 'John Huit',
-        selectedCard: null
-      },
-      {
-        id: '9',
-        name: 'John Neuf',
-        selectedCard: null
-      },
-      {
-        id: '10',
-        name: 'John Dix',
-        selectedCard: null
-      }
-    ]
+    const parsedPlayers = players
+      .sort(a => (a.id === user?.id ? -1 : 0))
+      .reduce(
+        (playersByCategory, player, idx) => {
+          playersByCategory[idx % 4].push(player)
+          return [...playersByCategory]
+        },
+        [[], [], [], []] as TablePlayersData[][]
+      )
 
-    const parsedPlayers = roomPlayers.reduce(
-      (playersByCategory, player, idx) => {
-        playersByCategory[idx % 4].push(player)
-        return [...playersByCategory]
-      },
-      [[], [], [], []] as PlayersData[][]
-    )
-
-    setPlayers(parsedPlayers)
-  }, [votingSystem])
+    setTablePlayers(parsedPlayers)
+  }, [votingSystem, players])
 
   return (
     <>
@@ -122,10 +97,10 @@ export const PokerRoom = () => {
             <section>
               <div className="flex items-center justify-center">
                 <PokerTable
-                  players={players}
+                  players={tablePlayers}
                   isShowingCards={isShowingCards}
-                  isShowingToggleButton={!!selectedOption}
-                  handleShowCards={() => handleShowCards}
+                  isShowingToggleButton={user.id === owner && !!selectedOption}
+                  handleShowCards={handleShowCards}
                 />
               </div>
 

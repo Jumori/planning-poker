@@ -69,7 +69,8 @@ export const Dashboard = () => {
       )
       await set(pokerRoomPlayersRef, {
         [user.id]: {
-          name: user.name
+          name: user.name,
+          selectedCard: null
         }
       })
 

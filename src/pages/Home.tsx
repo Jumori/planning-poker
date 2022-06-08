@@ -52,7 +52,8 @@ export const Home = () => {
 
       await update(ref(database), {
         [`pokerRooms/${pokerRoomCode}/players/${userStatus.id}`]: {
-          name: userStatus.name
+          name: userStatus.name,
+          selectedCard: null
         }
       })
 

@@ -8,15 +8,18 @@ export const votingSystems = {
 type PlayerData = {
   id: string
   name: string
+  selectedCard: string | null
 }
 
 export type UsePokerRoomType = {
+  owner: string | null
   title: string
   votingSystem: keyof typeof votingSystems | ''
   players: PlayerData[]
 }
 
 export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
+  const [owner, setOwner] = useState<string | null>(null)
   const [title, setTitle] = useState('')
   const [votingSystem, setVotingSystem] = useState<
     keyof typeof votingSystems | ''
@@ -30,24 +33,30 @@ export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
       const databaseRoomPlayers = databaseRoom.players as {
         [key: string]: {
           name: string
+          selectedCard: string | null
         }
       }
 
       if (databaseRoomPlayers) {
         const parsedPlayers = Object.entries(databaseRoomPlayers).map(
-          ([playerId, playerName]: [string, { name: string }]) => ({
+          ([playerId, playerName]: [
+            string,
+            { name: string; selectedCard: string | null }
+          ]) => ({
             id: playerId,
-            name: playerName.name
+            name: playerName.name,
+            selectedCard: playerName.selectedCard
           })
         )
 
         setPlayers(parsedPlayers)
       }
 
+      setOwner(databaseRoom.ownerId)
       setTitle(databaseRoom.title)
       setVotingSystem(databaseRoom.votingSystem)
     })
   }, [])
 
-  return { title, votingSystem, players }
+  return { title, votingSystem, players, owner }
 }
