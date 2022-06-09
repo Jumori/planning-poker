@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CaretDown } from 'phosphor-react'
 import toast from 'react-hot-toast'
@@ -21,9 +21,12 @@ export const Header = ({
   roomCode
 }: HeaderProps) => {
   const navigate = useNavigate()
-  const { logOut } = useAuth()
+  const { user, logOut } = useAuth()
   const [isShowingRoomOptions, setIsShowingRoomOptions] = useState(false)
   const [isShowingUserOptions, setIsShowingUserOptions] = useState(false)
+  const [userOptions, setUserOptions] = useState<
+    { label: string; onClick: () => void }[]
+  >([])
 
   const handleGoToDashboard = () => {
     navigate(`/dashboard`)
@@ -51,6 +54,23 @@ export const Header = ({
   const handleLogOut = async () => {
     await logOut()
   }
+
+  useEffect(() => {
+    const userDropdownOptions = []
+    if (!user?.isAnonymous) {
+      userDropdownOptions.push({
+        label: 'Dashboard',
+        onClick: () => handleGoToDashboard()
+      })
+    }
+
+    userDropdownOptions.push({
+      label: 'Sair',
+      onClick: () => handleLogOut()
+    })
+
+    setUserOptions(userDropdownOptions)
+  }, [])
 
   return (
     <header
@@ -139,20 +159,7 @@ export const Header = ({
             />
           </button>
 
-          {isShowingUserOptions && (
-            <HeaderDropdown
-              options={[
-                {
-                  label: 'Dashboard',
-                  onClick: () => handleGoToDashboard()
-                },
-                {
-                  label: 'Sair',
-                  onClick: () => handleLogOut()
-                }
-              ]}
-            />
-          )}
+          {isShowingUserOptions && <HeaderDropdown options={userOptions} />}
         </div>
 
         <img

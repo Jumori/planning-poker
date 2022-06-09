@@ -65,7 +65,7 @@ export const PokerRoom = () => {
   }
 
   useEffect(() => {
-    if (votingSystem === '') return
+    if (votingSystem === '' || !user) return
 
     setVotingSystemOptions(votingSystems[votingSystem])
 
@@ -80,6 +80,12 @@ export const PokerRoom = () => {
       )
 
     setTablePlayers(parsedPlayers)
+
+    const tableUser = players.find(players => players.id === user.id)
+
+    if (tableUser && tableUser.selectedCard !== selectedOption) {
+      setSelectedOption(tableUser.selectedCard)
+    }
   }, [votingSystem, players])
 
   return (

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { database, ref, onValue } from '../services/firebase'
+import toast from 'react-hot-toast'
 
 export const votingSystems = {
   fibonacci: ['1', '2', '3', '5', '8', '13', '21', '34', '55', '89', '?']
@@ -19,6 +21,8 @@ export type UsePokerRoomType = {
 }
 
 export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
+  const navigate = useNavigate()
+
   const [owner, setOwner] = useState<string | null>(null)
   const [title, setTitle] = useState('')
   const [votingSystem, setVotingSystem] = useState<
@@ -30,6 +34,12 @@ export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
     const pokerRoomRef = ref(database, `pokerRooms/${pokerRoomId}`)
     onValue(pokerRoomRef, room => {
       const databaseRoom = room.val()
+
+      if (!databaseRoom) {
+        toast.error('Sala indisponível')
+        navigate('/')
+      }
+
       const databaseRoomPlayers = databaseRoom.players as {
         [key: string]: {
           name: string
@@ -56,7 +66,7 @@ export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
       setTitle(databaseRoom.title)
       setVotingSystem(databaseRoom.votingSystem)
     })
-  }, [])
+  }, [pokerRoomId])
 
   return { title, votingSystem, players, owner }
 }
