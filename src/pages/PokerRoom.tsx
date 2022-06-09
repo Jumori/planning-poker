@@ -25,16 +25,14 @@ type TablePlayersData = {
 export const PokerRoom = () => {
   const { id } = useParams<PokerRoomParams>()
   const { user } = useAuth()
-  const { title, votingSystem, players, owner } = usePokerRoom(id)
+  const { title, votingSystem, players, owner, isShowingCards } =
+    usePokerRoom(id)
 
   const [votingSystemOptions, setVotingSystemOptions] = useState<string[]>([])
   const [tablePlayers, setTablePlayers] = useState<TablePlayersData[][]>([])
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
-  const [isShowingCards, setIsShowingCards] = useState(false)
 
   const handleSelectCard = async (value: string) => {
-    if (isShowingCards) return
-
     const tableUser = tablePlayers
       .flat()
       .find(tableUser => tableUser.id === user?.id)
@@ -61,21 +59,21 @@ export const PokerRoom = () => {
   }
 
   const handleShowCards = async () => {
-    if (selectedOption) {
-      if (!isShowingCards) {
-        try {
+    try {
+      if (selectedOption) {
+        if (!isShowingCards) {
           await update(ref(database), {
             [`pokerRooms/${id}/rounds/${uuidv4()}`]: players
           })
-
-          setIsShowingCards(!isShowingCards)
-        } catch (error) {
-          console.log(error)
-          toast.error('Não foi possível registrar rodada')
         }
-      } else {
-        setIsShowingCards(!isShowingCards)
+
+        await update(ref(database), {
+          [`pokerRooms/${id}/showingCards`]: !isShowingCards
+        })
       }
+    } catch (error) {
+      console.log(error)
+      toast.error('Não foi possível registrar rodada')
     }
   }
 

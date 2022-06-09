@@ -60,7 +60,8 @@ export const Dashboard = () => {
       await set(pokerRoomRef, {
         title: pokerRoomName,
         votingSystem,
-        ownerId: user?.id
+        ownerId: user?.id,
+        showingCards: false
       })
 
       const pokerRoomPlayersRef = ref(

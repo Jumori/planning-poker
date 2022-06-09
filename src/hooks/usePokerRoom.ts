@@ -18,6 +18,7 @@ export type UsePokerRoomType = {
   title: string
   votingSystem: keyof typeof votingSystems | ''
   players: PlayerData[]
+  isShowingCards: boolean
 }
 
 export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
@@ -29,6 +30,7 @@ export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
     keyof typeof votingSystems | ''
   >('')
   const [players, setPlayers] = useState<PlayerData[]>([])
+  const [isShowingCards, setIsShowingCards] = useState(false)
 
   useEffect(() => {
     const pokerRoomRef = ref(database, `pokerRooms/${pokerRoomId}`)
@@ -65,8 +67,9 @@ export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
       setOwner(databaseRoom.ownerId)
       setTitle(databaseRoom.title)
       setVotingSystem(databaseRoom.votingSystem)
+      setIsShowingCards(Boolean(databaseRoom.showingCards))
     })
   }, [pokerRoomId])
 
-  return { title, votingSystem, players, owner }
+  return { title, votingSystem, players, owner, isShowingCards }
 }
