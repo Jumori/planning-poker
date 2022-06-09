@@ -31,6 +31,9 @@ export const PokerRoom = () => {
   const [votingSystemOptions, setVotingSystemOptions] = useState<string[]>([])
   const [tablePlayers, setTablePlayers] = useState<TablePlayersData[][]>([])
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
+  const [roomOptions, setRoomOptions] = useState<
+    { label: string; onClick: () => void }[]
+  >([])
 
   const handleSelectCard = async (value: string) => {
     const tableUser = tablePlayers
@@ -77,6 +80,17 @@ export const PokerRoom = () => {
     }
   }
 
+  const handleCopyRoomCodeToClipboard = () => {
+    if (id) {
+      navigator.clipboard.writeText(id)
+      toast('Código copiado!')
+    }
+  }
+
+  const handleFinishRoom = () => {
+    console.log('handleFinishRoom')
+  }
+
   useEffect(() => {
     if (votingSystem === '' || !user) return
 
@@ -99,6 +113,22 @@ export const PokerRoom = () => {
     if (tableUser && tableUser.selectedCard !== selectedOption) {
       setSelectedOption(tableUser.selectedCard)
     }
+
+    const roomDropdownOptions = [
+      {
+        label: 'Copiar link',
+        onClick: () => handleCopyRoomCodeToClipboard()
+      }
+    ]
+
+    if (user && user.id === owner) {
+      roomDropdownOptions.push({
+        label: 'Encerrar sala',
+        onClick: () => handleFinishRoom()
+      })
+    }
+
+    setRoomOptions(roomDropdownOptions)
   }, [votingSystem, players])
 
   return (
@@ -110,6 +140,7 @@ export const PokerRoom = () => {
             avatar={user.avatar}
             roomCode={id}
             roomName={title}
+            roomOptions={roomOptions}
           />
 
           <main className="py-4 px-10">

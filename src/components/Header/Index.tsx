@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CaretDown } from 'phosphor-react'
-import toast from 'react-hot-toast'
 
 import { useAuth } from '../../hooks/useAuth'
 import { HeaderDropdown } from './Dropdown'
@@ -12,13 +11,15 @@ interface HeaderProps {
   avatar: string
   roomName?: string
   roomCode?: string | undefined
+  roomOptions?: { label: string; onClick: () => void }[]
 }
 
 export const Header = ({
   username,
   avatar,
   roomName,
-  roomCode
+  roomCode,
+  roomOptions
 }: HeaderProps) => {
   const navigate = useNavigate()
   const { user, logOut } = useAuth()
@@ -38,17 +39,6 @@ export const Header = ({
 
   const handleToggleShowingUserOptions = () => {
     setIsShowingUserOptions(!isShowingUserOptions)
-  }
-
-  const handleCopyRoomCodeToClipboard = () => {
-    if (roomCode) {
-      navigator.clipboard.writeText(roomCode)
-      toast('Código copiado!')
-    }
-  }
-
-  const handleFinishRoom = () => {
-    console.log('handleFinishRoom')
   }
 
   const handleLogOut = async () => {
@@ -109,7 +99,7 @@ export const Header = ({
                 {roomName}
               </span>
 
-              {roomCode && (
+              {roomCode && roomOptions && (
                 <CaretDown
                   size="15"
                   className={`text-violet-500 transition-all duration-100 ease-linear ${
@@ -118,19 +108,8 @@ export const Header = ({
                 />
               )}
             </button>
-            {roomCode && isShowingRoomOptions && (
-              <HeaderDropdown
-                options={[
-                  {
-                    label: 'Copiar link',
-                    onClick: () => handleCopyRoomCodeToClipboard()
-                  },
-                  {
-                    label: 'Encerrar sala',
-                    onClick: () => handleFinishRoom()
-                  }
-                ]}
-              />
+            {roomCode && roomOptions && isShowingRoomOptions && (
+              <HeaderDropdown options={roomOptions} />
             )}
           </div>
         )}

@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 import {
@@ -34,6 +34,7 @@ export const AuthContext = createContext({} as AuthContextType)
 
 export const AuthContextProvider = (props: AuthContextProviderProps) => {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [user, setUser] = useState<User>()
 
@@ -130,8 +131,10 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
             isAnonymous
           })
         } else {
-          toast.error('Sessão expirada')
-          navigate('/')
+          if (location.pathname !== '/') {
+            toast.error('Sessão expirada')
+            navigate('/')
+          }
         }
       } catch (error) {
         console.log(error)
