@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { HandPointing } from 'phosphor-react'
+import toast from 'react-hot-toast'
+import { v4 as uuidv4 } from 'uuid'
 
 import { useAuth } from '../hooks/useAuth'
 import { usePokerRoom, votingSystems } from '../hooks/usePokerRoom'
@@ -58,9 +60,22 @@ export const PokerRoom = () => {
     }
   }
 
-  const handleShowCards = () => {
+  const handleShowCards = async () => {
     if (selectedOption) {
-      setIsShowingCards(!isShowingCards)
+      if (!isShowingCards) {
+        try {
+          await update(ref(database), {
+            [`pokerRooms/${id}/rounds/${uuidv4()}`]: players
+          })
+
+          setIsShowingCards(!isShowingCards)
+        } catch (error) {
+          console.log(error)
+          toast.error('Não foi possível registrar rodada')
+        }
+      } else {
+        setIsShowingCards(!isShowingCards)
+      }
     }
   }
 
