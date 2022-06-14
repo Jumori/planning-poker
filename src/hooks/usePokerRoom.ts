@@ -33,42 +33,45 @@ export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
   const [isShowingCards, setIsShowingCards] = useState(false)
 
   useEffect(() => {
-    const pokerRoomRef = ref(database, `pokerRooms/${pokerRoomId}`)
-    onValue(pokerRoomRef, room => {
-      const databaseRoom = room.val()
+    if (pokerRoomId) {
+      const pokerRoomRef = ref(database, `pokerRooms/${pokerRoomId}`)
+      onValue(pokerRoomRef, room => {
+        const databaseRoom = room.val()
 
-      if (!databaseRoom) {
-        toast.error('Sala indisponível')
-        navigate('/')
-      }
-
-      const databaseRoomPlayers = databaseRoom.players as {
-        [key: string]: {
-          name: string
-          selectedCard: string | null
+        if (!databaseRoom) {
+          toast.error('Sala indisponível')
+          navigate('/')
+          return
         }
-      }
 
-      if (databaseRoomPlayers) {
-        const parsedPlayers = Object.entries(databaseRoomPlayers).map(
-          ([playerId, playerName]: [
-            string,
-            { name: string; selectedCard: string | null }
-          ]) => ({
-            id: playerId,
-            name: playerName.name,
-            selectedCard: playerName.selectedCard
-          })
-        )
+        const databaseRoomPlayers = databaseRoom.players as {
+          [key: string]: {
+            name: string
+            selectedCard: string | null
+          }
+        }
 
-        setPlayers(parsedPlayers)
-      }
+        if (databaseRoomPlayers) {
+          const parsedPlayers = Object.entries(databaseRoomPlayers).map(
+            ([playerId, playerName]: [
+              string,
+              { name: string; selectedCard: string | null }
+            ]) => ({
+              id: playerId,
+              name: playerName.name,
+              selectedCard: playerName.selectedCard
+            })
+          )
 
-      setOwner(databaseRoom.ownerId)
-      setTitle(databaseRoom.title)
-      setVotingSystem(databaseRoom.votingSystem)
-      setIsShowingCards(Boolean(databaseRoom.showingCards))
-    })
+          setPlayers(parsedPlayers)
+        }
+
+        setOwner(databaseRoom.ownerId)
+        setTitle(databaseRoom.title)
+        setVotingSystem(databaseRoom.votingSystem)
+        setIsShowingCards(Boolean(databaseRoom.showingCards))
+      })
+    }
   }, [pokerRoomId])
 
   return { title, votingSystem, players, owner, isShowingCards }

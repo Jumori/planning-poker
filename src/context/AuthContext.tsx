@@ -36,7 +36,7 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [user, setUser] = useState<User>()
+  const [user, setUser] = useState<User | undefined>(undefined)
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider()
@@ -109,6 +109,7 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
     try {
       await signOut(auth)
       setUser(undefined)
+      navigate('/')
     } catch (error) {
       console.log(error)
     }
@@ -120,18 +121,21 @@ export const AuthContextProvider = (props: AuthContextProviderProps) => {
         if (user) {
           const { displayName, photoURL, uid, isAnonymous } = user
 
-          if (!displayName) {
+          if (!displayName && !isAnonymous) {
             throw new Error('Missing account information.')
           }
 
           setUser({
             id: uid,
-            name: displayName,
+            name: displayName || '',
             avatar: photoURL || userImg,
             isAnonymous
           })
         } else {
-          if (location.pathname !== '/') {
+          if (
+            location.pathname !== '/' &&
+            !location.pathname.includes('/poker-room/')
+          ) {
             toast.error('Sessão expirada')
             navigate('/')
           }

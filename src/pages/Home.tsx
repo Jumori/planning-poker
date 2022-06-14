@@ -25,7 +25,6 @@ const schema = Yup.object().shape({
 export const Home = () => {
   const navigate = useNavigate()
   const { user, signInWithGoogle, signInAsAnonymous } = useAuth()
-
   const {
     register,
     handleSubmit,
