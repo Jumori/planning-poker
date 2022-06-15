@@ -107,7 +107,7 @@ export const PokerRoom = () => {
   const handleCopyRoomCodeToClipboard = () => {
     if (id) {
       navigator.clipboard.writeText(id)
-      toast('Código copiado!')
+      toast.success('Código copiado!')
     }
   }
 

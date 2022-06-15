@@ -19,7 +19,8 @@ import {
   query,
   limitToLast,
   orderByChild,
-  equalTo
+  equalTo,
+  onValue
 } from '../services/firebase'
 
 import { Header } from '../components/Header/Index'
@@ -76,7 +77,7 @@ export const Dashboard = () => {
   const [userRooms, setUserRooms] = useState<UserRooms[] | undefined>(undefined)
 
   const handleOpenNewRoomModal = () => {
-    if (userRooms && userRooms.length < 5) {
+    if (!userRooms || (userRooms && userRooms.length < 5)) {
       setIsCreatingRoom(true)
     } else {
       toast.error('Você atingiu o limite de jogos simultâneos')
@@ -126,8 +127,10 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
+      const pokerRoomsRef = ref(database, `pokerRooms`)
+
       const recentPostsRef = query(
-        ref(database, 'pokerRooms'),
+        pokerRoomsRef,
         orderByChild('ownerId'),
         equalTo(user.id),
         limitToLast(5)
@@ -137,6 +140,30 @@ export const Dashboard = () => {
         if (snapshot.exists()) {
           const rooms = Object.entries(
             snapshot.val() as { [key: string]: DBUserRooms }
+          )
+          if (rooms.length > 0) {
+            const parsedRooms = rooms.map(([roomId, roomData]) => {
+              return {
+                id: roomId,
+                title: roomData.title,
+                createdAt: roomData.createdAt,
+                rounds: roomData.rounds
+                  ? Object.keys(roomData.rounds).length
+                  : 0
+              }
+            })
+
+            setUserRooms(parsedRooms)
+          }
+        }
+      })
+
+      onValue(pokerRoomsRef, room => {
+        const databaseRoom = room.val()
+
+        if (databaseRoom) {
+          const rooms = Object.entries(
+            databaseRoom as { [key: string]: DBUserRooms }
           )
           if (rooms.length > 0) {
             const parsedRooms = rooms.map(([roomId, roomData]) => {
@@ -173,7 +200,7 @@ export const Dashboard = () => {
                       ? userRooms.length > 1
                         ? `${userRooms.length} jogos`
                         : `${userRooms.length} jogo`
-                      : ''}
+                      : '0 jogo'}
                   </span>
                 </div>
 

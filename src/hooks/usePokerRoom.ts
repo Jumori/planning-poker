@@ -35,7 +35,7 @@ export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
   useEffect(() => {
     if (pokerRoomId) {
       const pokerRoomRef = ref(database, `pokerRooms/${pokerRoomId}`)
-      onValue(pokerRoomRef, room => {
+      const unsubscribe = onValue(pokerRoomRef, room => {
         const databaseRoom = room.val()
 
         if (!databaseRoom) {
@@ -71,6 +71,10 @@ export const usePokerRoom = (pokerRoomId?: string): UsePokerRoomType => {
         setVotingSystem(databaseRoom.votingSystem)
         setIsShowingCards(Boolean(databaseRoom.showingCards))
       })
+
+      return () => {
+        unsubscribe()
+      }
     }
   }, [pokerRoomId])
 
