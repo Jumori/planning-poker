@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PlusCircle } from 'phosphor-react'
-import { format, subDays } from 'date-fns'
+import { format, formatISO, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Dialog, Transition } from '@headlessui/react'
 import * as Yup from 'yup'
@@ -11,7 +11,16 @@ import toast from 'react-hot-toast'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useAuth } from '../hooks/useAuth'
-import { database, ref, set } from '../services/firebase'
+import {
+  database,
+  ref,
+  set,
+  get,
+  query,
+  limitToLast,
+  orderByChild,
+  equalTo
+} from '../services/firebase'
 
 import { Header } from '../components/Header/Index'
 import { GameCards } from '../components/Dashboard/GameCards'
@@ -22,6 +31,25 @@ import { Select } from '../components/Common/Select'
 type PokerFormData = {
   pokerRoomName: string
   votingSystem: string
+}
+
+type UserRooms = {
+  id: string
+  title: string
+  createdAt: string
+  rounds: number
+}
+
+type DBUserRooms = {
+  title: string
+  createdAt: string
+  rounds?: {
+    [key: string]: {
+      id: string
+      name: string
+      selectedCard: string
+    }[]
+  }
 }
 
 const pokerSchema = Yup.object().shape({
@@ -45,6 +73,15 @@ export const Dashboard = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [isCreatingRoom, setIsCreatingRoom] = useState(false)
+  const [userRooms, setUserRooms] = useState<UserRooms[] | undefined>(undefined)
+
+  const handleOpenNewRoomModal = () => {
+    if (userRooms && userRooms.length < 5) {
+      setIsCreatingRoom(true)
+    } else {
+      toast.error('Você atingiu o limite de jogos simultâneos')
+    }
+  }
 
   const handleCreateRoom = async ({
     pokerRoomName,
@@ -61,7 +98,8 @@ export const Dashboard = () => {
         title: pokerRoomName,
         votingSystem,
         ownerId: user?.id,
-        showingCards: false
+        showingCards: false,
+        createdAt: formatISO(new Date())
       })
 
       const pokerRoomPlayersRef = ref(
@@ -86,6 +124,39 @@ export const Dashboard = () => {
     reset()
   }, [isCreatingRoom])
 
+  useEffect(() => {
+    if (user) {
+      const recentPostsRef = query(
+        ref(database, 'pokerRooms'),
+        orderByChild('ownerId'),
+        equalTo(user.id),
+        limitToLast(5)
+      )
+
+      get(recentPostsRef).then(snapshot => {
+        if (snapshot.exists()) {
+          const rooms = Object.entries(
+            snapshot.val() as { [key: string]: DBUserRooms }
+          )
+          if (rooms.length > 0) {
+            const parsedRooms = rooms.map(([roomId, roomData]) => {
+              return {
+                id: roomId,
+                title: roomData.title,
+                createdAt: roomData.createdAt,
+                rounds: roomData.rounds
+                  ? Object.keys(roomData.rounds).length
+                  : 0
+              }
+            })
+
+            setUserRooms(parsedRooms)
+          }
+        }
+      })
+    }
+  }, [user])
+
   return (
     <>
       {user && (
@@ -98,7 +169,11 @@ export const Dashboard = () => {
                 <div className="flex justify-center items-center gap-2">
                   <h1 className="text-3xl">Meus jogos</h1>
                   <span className="bg-zinc-300 rounded-xl py-1 px-2 text-sm">
-                    2 jogos
+                    {userRooms
+                      ? userRooms.length > 1
+                        ? `${userRooms.length} jogos`
+                        : `${userRooms.length} jogo`
+                      : ''}
                   </span>
                 </div>
 
@@ -125,7 +200,7 @@ export const Dashboard = () => {
                     transition-all
                     duration-150
                     ease-linear"
-                  onClick={() => setIsCreatingRoom(true)}
+                  onClick={() => handleOpenNewRoomModal()}
                 >
                   <PlusCircle
                     size="50"
@@ -135,67 +210,32 @@ export const Dashboard = () => {
                   <p className="text-violet-500">Novo jogo</p>
                 </button>
 
-                <GameCards
-                  id="1"
-                  title="sprint 1"
-                  date={format(new Date(), 'dd MMM yyyy', { locale: ptBR })}
-                  url=""
-                  rounds={5}
-                  scoresHeight={[
-                    'h-[1rem]',
-                    'h-[2rem]',
-                    'h-[3rem]',
-                    'h-[4rem]',
-                    'h-[5rem]',
-                    'h-[6rem]',
-                    'h-[7rem]',
-                    'h-[8rem]',
-                    'h-[9rem]',
-                    'h-[9rem]'
-                  ]}
-                />
-                <GameCards
-                  id="2"
-                  title="sprint 2"
-                  date={format(subDays(new Date(), 15), 'dd MMM yyyy', {
-                    locale: ptBR
-                  })}
-                  url=""
-                  rounds={1}
-                  scoresHeight={[
-                    'h-[0rem]',
-                    'h-[0rem]',
-                    'h-[0rem]',
-                    'h-[0rem]',
-                    'h-[0rem]',
-                    'h-[0rem]',
-                    'h-[0rem]',
-                    'h-[0rem]',
-                    'h-[0rem]',
-                    'h-[0rem]'
-                  ]}
-                />
-                <GameCards
-                  id="3"
-                  title="sprint 3"
-                  date={format(subDays(new Date(), 30), 'dd MMM yyyy', {
-                    locale: ptBR
-                  })}
-                  url=""
-                  rounds={7}
-                  scoresHeight={[
-                    'h-[1rem]',
-                    'h-[2rem]',
-                    'h-[3rem]',
-                    'h-[4rem]',
-                    'h-[5rem]',
-                    'h-[6rem]',
-                    'h-[7rem]',
-                    'h-[8rem]',
-                    'h-[9rem]',
-                    'h-[90rem]'
-                  ]}
-                />
+                {userRooms
+                  ? userRooms.map(room => (
+                      <GameCards
+                        key={room.id}
+                        id={room.id}
+                        title={room.title}
+                        date={format(parseISO(room.createdAt), 'dd MMM yyyy', {
+                          locale: ptBR
+                        })}
+                        url={room.id}
+                        rounds={room.rounds}
+                        scoresHeight={[
+                          'h-[0rem]',
+                          'h-[0rem]',
+                          'h-[0rem]',
+                          'h-[0rem]',
+                          'h-[0rem]',
+                          'h-[0rem]',
+                          'h-[0rem]',
+                          'h-[0rem]',
+                          'h-[0rem]',
+                          'h-[0rem]'
+                        ]}
+                      />
+                    ))
+                  : undefined}
               </div>
             </section>
           </main>
